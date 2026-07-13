@@ -1,0 +1,14 @@
+control_cmd_to_vesc_node:
+  ros__parameters:
+    max_forward_erpm: 14000.0
+    max_reverse_erpm: 5000.0
+    max_brake_current_amps: 20.0
+    servo_gain: -0.315
+    servo_offset: 0.5304
+    servo_min: 0.15
+    servo_max: 0.85
+    throttle_deadband: 0.03
+    reverse_deadband: 0.03
+    brake_deadband: 0.03
+    max_command_age_s: 0.5
+    output_rate_hz: 50.0

@@ -1,0 +1,32 @@
+<launch>
+    <arg name="use_sim_time" default="false"/>
+    <arg name="vehicle_control_topic" default="/vehicle/control_cmd"/>
+    <arg name="driver_param" default="$(find-pkg-share jetpilot_vesc_interface)/config/vesc_interface.param.yaml"/>
+    <arg name="vesc_driver_param" default="$(find-pkg-share vesc_driver)/params/vesc_config.yaml"/>
+    <arg name="publish_description" default="false"/>
+    <arg name="description_base_frame" default="base_link"/>
+    <arg name="description_camera_frame" default="camera_link"/>
+    <arg name="description_camera_x" default="0.2075"/>
+    <arg name="description_camera_y" default="0.019"/>
+    <arg name="description_camera_z" default="0.065"/>
+    <arg name="description_camera_roll" default="0.0"/>
+    <arg name="description_camera_pitch" default="0.0"/>
+    <arg name="description_camera_yaw" default="0.0"/>
+
+    <node pkg="jetpilot_vesc_interface"
+          exec="control_cmd_to_vesc_node"
+          name="control_cmd_to_vesc_node"
+          output="screen">
+        <param from="$(var driver_param)"/>
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
+        <remap from="/control_cmd" to="$(var vehicle_control_topic)"/>
+    </node>
+
+    <node pkg="vesc_driver"
+          exec="vesc_driver_node"
+          name="vesc_driver_node"
+          output="screen">
+        <param from="$(var vesc_driver_param)"/>
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
+    </node>
+</launch>
