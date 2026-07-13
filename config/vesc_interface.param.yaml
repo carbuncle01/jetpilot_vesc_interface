@@ -1,7 +1,7 @@
 control_cmd_to_vesc_node:
   ros__parameters:
     max_forward_erpm: 23250.0
-    max_reverse_erpm: -23250.0
+    max_reverse_erpm: 23250.0
     max_brake_current_amps: 20.0
     servo_gain: 0.315
     servo_offset: 0.5304
