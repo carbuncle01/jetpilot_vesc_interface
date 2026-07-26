@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot name="jetpilot_vesc_vehicle" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="base_frame" default="base_link" />
+
+  <xacro:arg name="camera_frame" default="camera_link" />
+  <xacro:arg name="camera_x" default="0.0" />
+  <xacro:arg name="camera_y" default="0.0" />
+  <xacro:arg name="camera_z" default="0.0" />
+  <xacro:arg name="camera_roll" default="0.0" />
+  <xacro:arg name="camera_pitch" default="0.0" />
+  <xacro:arg name="camera_yaw" default="0.0" />
+
+  <xacro:arg name="evs_frame" default="evs_link" />
+  <xacro:arg name="evs_x" default="0.0" />
+  <xacro:arg name="evs_y" default="0.0" />
+  <xacro:arg name="evs_z" default="0.0" />
+  <xacro:arg name="evs_roll" default="0.0" />
+  <xacro:arg name="evs_pitch" default="0.0" />
+  <xacro:arg name="evs_yaw" default="0.0" />
+
+  <xacro:arg name="thremo_frame" default="thremo_link" />
+  <xacro:arg name="thremo_x" default="0.0" />
+  <xacro:arg name="thremo_y" default="0.0" />
+  <xacro:arg name="thremo_z" default="0.0" />
+  <xacro:arg name="thremo_roll" default="0.0" />
+  <xacro:arg name="thremo_pitch" default="0.0" />
+  <xacro:arg name="thremo_yaw" default="0.0" />
+
+  <link name="$(arg base_frame)" />
+  <link name="$(arg camera_frame)" />
+  <link name="$(arg evs_frame)" />
+  <link name="$(arg thremo_frame)" />
+
+  <joint name="$(arg base_frame)_to_$(arg camera_frame)" type="fixed">
+    <parent link="$(arg base_frame)" />
+    <child link="$(arg camera_frame)" />
+    <origin
+      xyz="$(arg camera_x) $(arg camera_y) $(arg camera_z)"
+      rpy="$(arg camera_roll) $(arg camera_pitch) $(arg camera_yaw)" />
+  </joint>
+
+  <joint name="$(arg base_frame)_to_$(arg evs_frame)" type="fixed">
+    <parent link="$(arg base_frame)" />
+    <child link="$(arg evs_frame)" />
+    <origin
+      xyz="$(arg evs_x) $(arg evs_y) $(arg evs_z)"
+      rpy="$(arg evs_roll) $(arg evs_pitch) $(arg evs_yaw)" />
+  </joint>
+
+  <joint name="$(arg base_frame)_to_$(arg thremo_frame)" type="fixed">
+    <parent link="$(arg base_frame)" />
+    <child link="$(arg thremo_frame)" />
+    <origin
+      xyz="$(arg thremo_x) $(arg thremo_y) $(arg thremo_z)"
+      rpy="$(arg thremo_roll) $(arg thremo_pitch) $(arg thremo_yaw)" />
+  </joint>
+</robot>

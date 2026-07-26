@@ -11,7 +11,7 @@ ament_auto_find_build_dependencies()
 ament_auto_add_executable(control_cmd_to_vesc_node src/control_cmd_to_vesc_node.cpp)
 target_compile_features(control_cmd_to_vesc_node PUBLIC cxx_std_17)
 
-install(DIRECTORY config launch
+install(DIRECTORY config launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

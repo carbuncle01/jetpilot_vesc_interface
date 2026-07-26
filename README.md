@@ -2,6 +2,8 @@
 
 JetPilot の正規化 control command を VESC driver 用 topic に変換する vehicle interface package です。上位の planning/control/operation は `jetpilot_msgs/msg/ControlCommand` だけを扱い、この package が eRPM、brake current、servo position へ変換します。
 
+`publish_description:=true`では、`base_link`を親とするcamera、EVS、thremoの固定TFも公開します。各センサーの取付位置はlaunch引数で変更できます。
+
 ## Node
 
 | Node | 役割 |
@@ -35,10 +37,24 @@ throttle、reverse、brake には個別 deadband があります。servo の符�
 ros2 launch jetpilot_vesc_interface vesc_interface.launch.xml
 ```
 
+固定TFも同時に起動する場合:
+
+```bash
+ros2 launch jetpilot_vesc_interface vesc_interface.launch.xml \
+  publish_description:=true \
+  description_camera_frame:=camera_link \
+  description_evs_frame:=evs_link \
+  description_thremo_frame:=thremo_link
+```
+
 `jetpilot_system_launch` から使う場合は vehicle interface をこの package に差し替えます。
 
 ```bash
 ros2 launch jetpilot_system_launch bringup.launch.py \
   vehicle_interface_pkg:=jetpilot_vesc_interface \
-  vehicle_interface_launch:=launch/vesc_interface.launch.xml
+  vehicle_interface_launch:=launch/vesc_interface.launch.xml \
+  publish_vehicle_evs_description:=true \
+  publish_vehicle_thremo_description:=true
 ```
+
+EVSとthremoの初期姿勢はどちらも`base_link`に対して`xyz=0 0 0`、`rpy=0 0 0`です。実機の取付位置を測定したら、`vehicle_description_evs_*`と`vehicle_description_thremo_*`を更新してください。`scripts/bringup.sh`のVESCモードでは両TFを自動的に有効化します。

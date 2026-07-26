@@ -12,6 +12,21 @@
     <arg name="description_camera_roll" default="0.0"/>
     <arg name="description_camera_pitch" default="0.0"/>
     <arg name="description_camera_yaw" default="0.0"/>
+    <arg name="description_evs_frame" default="evs_link"/>
+    <arg name="description_evs_x" default="0.0"/>
+    <arg name="description_evs_y" default="0.0"/>
+    <arg name="description_evs_z" default="0.0"/>
+    <arg name="description_evs_roll" default="0.0"/>
+    <arg name="description_evs_pitch" default="0.0"/>
+    <arg name="description_evs_yaw" default="0.0"/>
+    <arg name="description_thremo_frame" default="thremo_link"/>
+    <arg name="description_thremo_x" default="0.0"/>
+    <arg name="description_thremo_y" default="0.0"/>
+    <arg name="description_thremo_z" default="0.0"/>
+    <arg name="description_thremo_roll" default="0.0"/>
+    <arg name="description_thremo_pitch" default="0.0"/>
+    <arg name="description_thremo_yaw" default="0.0"/>
+    <arg name="robot_description_xacro" default="$(find-pkg-share jetpilot_vesc_interface)/urdf/vesc_mounts.urdf.xacro"/>
 
     <node pkg="jetpilot_vesc_interface"
           exec="control_cmd_to_vesc_node"
@@ -27,6 +42,19 @@
           name="vesc_driver_node"
           output="screen">
         <param from="$(var vesc_driver_param)"/>
+        <param name="use_sim_time" value="$(var use_sim_time)"/>
+    </node>
+
+    <let
+      name="robot_description"
+      value="$(command 'xacro $(var robot_description_xacro) base_frame:=$(var description_base_frame) camera_frame:=$(var description_camera_frame) camera_x:=$(var description_camera_x) camera_y:=$(var description_camera_y) camera_z:=$(var description_camera_z) camera_roll:=$(var description_camera_roll) camera_pitch:=$(var description_camera_pitch) camera_yaw:=$(var description_camera_yaw) evs_frame:=$(var description_evs_frame) evs_x:=$(var description_evs_x) evs_y:=$(var description_evs_y) evs_z:=$(var description_evs_z) evs_roll:=$(var description_evs_roll) evs_pitch:=$(var description_evs_pitch) evs_yaw:=$(var description_evs_yaw) thremo_frame:=$(var description_thremo_frame) thremo_x:=$(var description_thremo_x) thremo_y:=$(var description_thremo_y) thremo_z:=$(var description_thremo_z) thremo_roll:=$(var description_thremo_roll) thremo_pitch:=$(var description_thremo_pitch) thremo_yaw:=$(var description_thremo_yaw)')"/>
+    <node pkg="robot_state_publisher"
+          exec="robot_state_publisher"
+          name="robot_state_publisher"
+          output="screen"
+          if="$(var publish_description)">
+        <param name="robot_description" value="$(var robot_description)"/>
+        <param name="use_tf_static" value="true"/>
         <param name="use_sim_time" value="$(var use_sim_time)"/>
     </node>
 </launch>
