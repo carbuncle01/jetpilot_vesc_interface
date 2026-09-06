@@ -1,23 +1,51 @@
 # jetpilot_vesc_interface
 
+## Purpose
+
 JetPilot の正規化 control command を VESC driver 用 topic に変換する vehicle interface package です。上位の planning/control/operation は `jetpilot_msgs/msg/ControlCommand` だけを扱い、この package が eRPM、brake current、servo position へ変換します。
 
 `publish_description:=true`では、`base_link`を親とするcamera、EVS、thremoの固定TFも公開します。各センサーの取付位置はlaunch引数で変更できます。
 
-## Node
+## Nodes
 
-| Node | 役割 |
-| --- | --- |
-| `control_cmd_to_vesc_node` | `/control_cmd` を VESC driver の motor/servo command topic に変換する |
+| Node | Executable | Description |
+| --- | --- | --- |
+| `control_cmd_to_vesc_node` | `control_cmd_to_vesc_node` | 正規化指令をVESC motor/servo commandへ変換する |
+| `vesc_driver_node` | `vesc_driver_node` | VESC hardwareと通信するexternal driver |
+| `robot_state_publisher` | `robot_state_publisher` | 任意でvehicle mountのstatic TFをpublishする |
 
-## Topic契約
+## Inputs / Outputs
 
-| 方向 | Topic | 型 | 用途 |
-| --- | --- | --- | --- |
-| input | `/control_cmd` | `jetpilot_msgs/msg/ControlCommand` | mux 後の正規化指令 |
-| output | `commands/motor/speed` | `std_msgs/msg/Float64` | throttle/reverse を eRPM に変換した速度指令 |
-| output | `commands/motor/brake` | `std_msgs/msg/Float64` | brake を current [A] に変換した制動指令 |
-| output | `commands/servo/position` | `std_msgs/msg/Float64` | steering を servo position に変換した操舵指令 |
+### Input topics
+
+| Node | Name | Type | QoS | Description |
+| --- | --- | --- | --- | --- |
+| `control_cmd_to_vesc_node` | `/vehicle/control_cmd` | `jetpilot_msgs/msg/ControlCommand` | Best Effort / Volatile | node内の`/control_cmd`をlaunchで標準remap |
+
+### Output topics
+
+| Node | Name | Type | QoS | Description |
+| --- | --- | --- | --- | --- |
+| `control_cmd_to_vesc_node` | `/commands/motor/speed` | `std_msgs/msg/Float64` | Reliable / Volatile | throttle/reverseをeRPMへ変換した指令 |
+| `control_cmd_to_vesc_node` | `/commands/motor/brake` | `std_msgs/msg/Float64` | Reliable / Volatile | brake current [A] |
+| `control_cmd_to_vesc_node` | `/commands/servo/position` | `std_msgs/msg/Float64` | Reliable / Volatile | steering servo position |
+
+### TF
+
+| Node | Parent | Child | Mode | Description |
+| --- | --- | --- | --- | --- |
+| `robot_state_publisher` | `base_link` | configured sensor frames | Static publish | `publish_description:=true`時のcamera/EVS/thermal mount |
+
+## Parameters
+
+eRPM、brake current、servo変換、deadband、watchdogの標準値は
+[`config/vesc_interface.param.yaml`](config/vesc_interface.param.yaml)を参照してください。
+
+## Assumptions / Known limits
+
+- VESC driverのtopic namespaceが標準`/commands/*`と一致している必要があります。
+- servoの符号・offset、eRPM上限、brake currentは実車ごとに校正します。
+- command timeout時はspeed 0とneutral servoを出しますが、hardware側watchdogも独立して必要です。
 
 `/control_cmd` は best-effort `KeepLast(1)` で購読します。VESC driver へ向けた topic は相対名なので、launch namespace に応じて配置できます。
 
@@ -31,7 +59,7 @@ JetPilot の正規化 control command を VESC driver 用 topic に変換する 
 
 throttle、reverse、brake には個別 deadband があります。servo の符号は車体組付けで変わるため、最初はタイヤを浮かせて `servo_gain` と `servo_offset` を確認してください。
 
-## 起動
+## How to launch
 
 ```bash
 ros2 launch jetpilot_vesc_interface vesc_interface.launch.xml
